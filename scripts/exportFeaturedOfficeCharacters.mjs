@@ -2,8 +2,14 @@
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import {
+  countWords,
+  getEpisodes,
+  normalizeSpeaker,
+  parseJsonFile,
+} from './countOfficeWords.mjs';
 
-const defaultInputPath = 'src/data/generated/officeWordCounts.json';
+const defaultInputPath = 'src/data/the-office.json';
 const defaultOutputPath = 'src/data/generated/featuredOfficeCharacters.ts';
 
 const featuredCharacters = [
@@ -35,46 +41,60 @@ const featuredCharacters = [
   { speaker: 'Karen', id: 'karen-filippelli', name: 'Karen Filippelli' },
 ];
 
-function parseJsonFile(input) {
-  return JSON.parse(input.replace(/^\uFEFF/, ''));
-}
-
-function getCharacter(wordCounts, speaker) {
-  const character = wordCounts.characters?.find(
-    (item) => item.speaker === speaker,
+function buildFeaturedCharacters(data) {
+  const episodes = getEpisodes(data);
+  const speakerMap = new Map(
+    featuredCharacters.map((character) => [
+      character.speaker,
+      {
+        id: character.id,
+        name: character.name,
+        totalWordsSpoken: 0,
+        points: [],
+      },
+    ]),
   );
 
-  if (!character) {
-    throw new Error(
-      `Could not find speaker "${speaker}" in generated word counts.`,
-    );
-  }
+  episodes.forEach((episode, episodeIndex) => {
+    const episodeWordsBySpeaker = new Map();
+    const scenes = Array.isArray(episode.scenes) ? episode.scenes : [];
 
-  return character;
-}
+    for (const scene of scenes) {
+      if (!Array.isArray(scene)) {
+        continue;
+      }
 
-function toFeaturedCharacter(wordCounts, character) {
-  const source = getCharacter(wordCounts, character.speaker);
+      for (const entry of scene) {
+        const speaker = normalizeSpeaker(entry?.speaker);
 
-  return {
-    id: character.id,
-    name: character.name,
-    totalWordsSpoken: source.totalWordsSpoken,
-    points: source.episodes.map((episode, index) => [
-      index + 1,
-      episode.wordsSpoken,
-    ]),
-  };
+        if (!speakerMap.has(speaker)) {
+          continue;
+        }
+
+        const words = countWords(entry?.line);
+        episodeWordsBySpeaker.set(
+          speaker,
+          (episodeWordsBySpeaker.get(speaker) ?? 0) + words,
+        );
+      }
+    }
+
+    for (const character of featuredCharacters) {
+      const featuredCharacter = speakerMap.get(character.speaker);
+      const wordsSpoken = episodeWordsBySpeaker.get(character.speaker) ?? 0;
+
+      featuredCharacter.totalWordsSpoken += wordsSpoken;
+      featuredCharacter.points.push([episodeIndex + 1, wordsSpoken]);
+    }
+  });
+
+  return [...speakerMap.values()];
 }
 
 function toTypeScript(characters) {
   return `import type { CharacterLineData } from '../../types';
 
-export const featuredOfficeCharacterLines = ${JSON.stringify(
-    characters,
-    null,
-    2,
-  )} satisfies CharacterLineData[];
+export const featuredOfficeCharacterLines = ${JSON.stringify(characters)} satisfies CharacterLineData[];
 `;
 }
 
@@ -83,10 +103,8 @@ async function run() {
     process.argv.slice(2);
   const inputFilePath = path.resolve(process.cwd(), inputPath);
   const outputFilePath = path.resolve(process.cwd(), outputPath);
-  const wordCounts = parseJsonFile(await readFile(inputFilePath, 'utf8'));
-  const characters = featuredCharacters.map((character) =>
-    toFeaturedCharacter(wordCounts, character),
-  );
+  const transcript = parseJsonFile(await readFile(inputFilePath, 'utf8'));
+  const characters = buildFeaturedCharacters(transcript);
 
   await mkdir(path.dirname(outputFilePath), { recursive: true });
   await writeFile(outputFilePath, toTypeScript(characters));

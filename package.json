@@ -8,7 +8,6 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "words:count": "node scripts/countOfficeWords.mjs",
     "words:featured": "node scripts/exportFeaturedOfficeCharacters.mjs"
   },
   "dependencies": {

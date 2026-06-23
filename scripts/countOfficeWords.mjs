@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const defaultOutputPath = 'src/data/generated/officeWordCounts.json';
+const defaultOutputPath = path.join(os.tmpdir(), 'officeWordCounts.json');
 
 export function countWords(line) {
   if (typeof line !== 'string') {
@@ -14,7 +15,7 @@ export function countWords(line) {
   return line.match(/[\p{L}\p{N}]+(?:[-'’][\p{L}\p{N}]+)*/gu)?.length ?? 0;
 }
 
-function getEpisodes(data) {
+export function getEpisodes(data) {
   if (Array.isArray(data)) {
     return data;
   }
@@ -26,7 +27,7 @@ function getEpisodes(data) {
   throw new Error('Expected the input JSON to be an array of episodes.');
 }
 
-function normalizeSpeaker(speaker) {
+export function normalizeSpeaker(speaker) {
   return typeof speaker === 'string' ? speaker.trim() : '';
 }
 
@@ -133,7 +134,7 @@ export function buildWordCounts(data) {
   };
 }
 
-function parseJsonFile(input) {
+export function parseJsonFile(input) {
   return JSON.parse(input.replace(/^\uFEFF/, ''));
 }
 
@@ -141,10 +142,10 @@ async function run() {
   const [inputPath, outputPath = defaultOutputPath] = process.argv.slice(2);
 
   if (!inputPath || inputPath === '-h' || inputPath === '--help') {
-    console.log(`Usage: bun run words:count -- <input-json-path> [output-json-path]
+    console.log(`Usage: node scripts/countOfficeWords.mjs <input-json-path> [output-json-path]
 
 Example:
-  bun run words:count -- src/data/the-office.json
+  node scripts/countOfficeWords.mjs src/data/the-office.json
 
 Default output:
   ${defaultOutputPath}`);

@@ -1741,7 +1741,7 @@ export const featuredOfficeCharacterLines = [
   {
     id: 'ryan-howard',
     name: 'Ryan Howard',
-    totalWordsSpoken: 13349,
+    totalWordsSpoken: 13539,
     points: [
       [1, 54],
       [2, 32],
@@ -1923,7 +1923,7 @@ export const featuredOfficeCharacterLines = [
       [178, 0],
       [179, 0],
       [180, 0],
-      [181, 0],
+      [181, 190],
       [182, 0],
       [183, 0],
       [184, 0],
@@ -2899,7 +2899,7 @@ export const featuredOfficeCharacterLines = [
   {
     id: 'nellie-bertram',
     name: 'Nellie Bertram',
-    totalWordsSpoken: 7195,
+    totalWordsSpoken: 7202,
     points: [
       [1, 0],
       [2, 0],
@@ -3039,7 +3039,7 @@ export const featuredOfficeCharacterLines = [
       [136, 0],
       [137, 0],
       [138, 0],
-      [139, 212],
+      [139, 219],
       [140, 0],
       [141, 0],
       [142, 0],
@@ -3285,7 +3285,7 @@ export const featuredOfficeCharacterLines = [
   {
     id: 'robert-california',
     name: 'Robert California',
-    totalWordsSpoken: 6252,
+    totalWordsSpoken: 6475,
     points: [
       [1, 0],
       [2, 0],
@@ -3425,7 +3425,7 @@ export const featuredOfficeCharacterLines = [
       [136, 0],
       [137, 0],
       [138, 0],
-      [139, 291],
+      [139, 298],
       [140, 416],
       [141, 313],
       [142, 0],
@@ -3443,7 +3443,7 @@ export const featuredOfficeCharacterLines = [
       [154, 0],
       [155, 0],
       [156, 0],
-      [157, 0],
+      [157, 216],
       [158, 291],
       [159, 235],
       [160, 251],
