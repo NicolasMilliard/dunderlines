@@ -4,8 +4,7 @@ import { officeCharacters } from './data/officeCharacters';
 function App() {
   return (
     <main className="p-8">
-      <h1 className="text-3xl font-semibold">Dunderlines</h1>
-      <div className="mt-8 flex flex-col gap-3">
+      <div className="flex flex-col items-center gap-3">
         {officeCharacters.map((character) => (
           <CharacterLine
             key={character.id}
