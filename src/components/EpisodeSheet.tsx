@@ -6,6 +6,8 @@ import {
   hasTmdbCredentials,
   type TmdbEpisodeDetails,
 } from '../services/tmdb';
+import { EpisodeSheetSkeleton } from './EpisodeSheetSkeleton';
+import { EpisodeSheetUnavailable } from './EpisodeSheetUnavailable';
 
 type EpisodeSheetProps = {
   characterName: string;
@@ -19,8 +21,7 @@ const sheetAnimationMs = 200;
 type EpisodeDetailsState =
   | { status: 'loading' }
   | { status: 'ready'; episode: TmdbEpisodeDetails }
-  | { status: 'missing-token' }
-  | { status: 'error' };
+  | { status: 'unavailable' };
 
 export function EpisodeSheet({
   characterName,
@@ -30,7 +31,7 @@ export function EpisodeSheet({
 }: EpisodeSheetProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [episodeDetails, setEpisodeDetails] = useState<EpisodeDetailsState>({
-    status: hasTmdbCredentials ? 'loading' : 'missing-token',
+    status: hasTmdbCredentials ? 'loading' : 'unavailable',
   });
   const closeTimeoutRef = useRef<number | null>(null);
   const sheetRef = useRef<HTMLElement>(null);
@@ -89,7 +90,7 @@ export function EpisodeSheet({
       })
       .catch(() => {
         if (isActive) {
-          setEpisodeDetails({ status: 'error' });
+          setEpisodeDetails({ status: 'unavailable' });
         }
       });
 
@@ -139,44 +140,34 @@ export function EpisodeSheet({
           <X size={18} strokeWidth={2} aria-hidden="true" />
         </button>
         <div className="mt-12 grid gap-5">
-          {episodeDetails.status === 'ready' && episodeDetails.episode.imageUrl ? (
-            <img
-              className="aspect-video w-full rounded-lg object-cover"
-              src={episodeDetails.episode.imageUrl}
-              alt=""
-            />
-          ) : null}
-
-          <div>
-            <p className="text-sm font-medium text-black/50">
-              Season {season}, Episode {episode}
-            </p>
-            <h2 className="mt-1 text-2xl font-bold text-black">
-              {episodeDetails.status === 'ready'
-                ? episodeDetails.episode.title
-                : 'Episode details'}
-            </h2>
-          </div>
-
           {episodeDetails.status === 'loading' ? (
-            <p className="text-sm text-black/60">Loading episode details from TMDB…</p>
-          ) : null}
-
-          {episodeDetails.status === 'missing-token' ? (
-            <p className="text-sm leading-6 text-black/60">
-              Add a TMDB read access token to <code>.env.local</code> to load
-              the episode image, synopsis, and rating.
-            </p>
-          ) : null}
-
-          {episodeDetails.status === 'error' ? (
-            <p className="text-sm leading-6 text-black/60">
-              TMDB details could not be loaded right now.
-            </p>
+            <>
+              <p className="sr-only" role="status">
+                Loading episode details from TMDB.
+              </p>
+              <EpisodeSheetSkeleton />
+            </>
           ) : null}
 
           {episodeDetails.status === 'ready' ? (
             <>
+              {episodeDetails.episode.imageUrl ? (
+                <img
+                  className="aspect-video w-full rounded-lg object-cover"
+                  src={episodeDetails.episode.imageUrl}
+                  alt=""
+                />
+              ) : null}
+
+              <div>
+                <p className="text-sm font-medium text-black/50">
+                  Season {season}, Episode {episode}
+                </p>
+                <h2 className="mt-1 text-2xl font-bold text-black">
+                  {episodeDetails.episode.title}
+                </h2>
+              </div>
+
               <dl className="grid gap-4">
                 <div className="flex items-baseline justify-between gap-4 border-b border-black/10 pb-3">
                   <dt className="text-sm text-black/60">Season</dt>
@@ -201,6 +192,10 @@ export function EpisodeSheet({
                 </p>
               ) : null}
             </>
+          ) : null}
+
+          {episodeDetails.status === 'unavailable' ? (
+            <EpisodeSheetUnavailable episode={episode} season={season} />
           ) : null}
 
           <a
