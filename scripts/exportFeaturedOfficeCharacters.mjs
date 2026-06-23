@@ -84,7 +84,12 @@ function buildFeaturedCharacters(data) {
       const wordsSpoken = episodeWordsBySpeaker.get(character.speaker) ?? 0;
 
       featuredCharacter.totalWordsSpoken += wordsSpoken;
-      featuredCharacter.points.push([episodeIndex + 1, wordsSpoken]);
+      featuredCharacter.points.push([
+        episodeIndex + 1,
+        wordsSpoken,
+        episode.season,
+        episode.episode,
+      ]);
     }
   });
 
