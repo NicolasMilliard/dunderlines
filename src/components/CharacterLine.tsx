@@ -7,8 +7,8 @@ type CharacterLineProps = {
   points: LinePoint[];
 };
 
-const chartWidth = 480;
-const chartHeight = 48;
+const chartWidth = 580;
+const chartHeight = 64;
 const chartMargin = {
   top: 8,
   right: 8,
@@ -53,6 +53,12 @@ export function CharacterLine({ text, points }: CharacterLineProps) {
   const labelPoint = points[0];
   const labelX = xScale(labelPoint[0]) - 12;
   const labelY = yScale(labelPoint[1]);
+  const scaledPoints = points.map(([episodeIndex, wordsSpoken]) => ({
+    cx: xScale(episodeIndex),
+    cy: yScale(wordsSpoken),
+    episodeIndex,
+    wordsSpoken,
+  }));
 
   return (
     <svg
@@ -81,6 +87,16 @@ export function CharacterLine({ text, points }: CharacterLineProps) {
         strokeWidth="2"
         vectorEffect="non-scaling-stroke"
       />
+      {scaledPoints.map(({ cx, cy, episodeIndex, wordsSpoken }) => (
+        <g
+          key={episodeIndex}
+          className="character-line-point"
+          aria-label={`${text}, episode ${episodeIndex}: ${wordsSpoken} words`}
+        >
+          <circle cx={cx} cy={cy} r="6" fill="transparent" />
+          <circle className="character-line-point__dot" cx={cx} cy={cy} r="2" />
+        </g>
+      ))}
     </svg>
   );
 }
