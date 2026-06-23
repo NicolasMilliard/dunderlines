@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { scaleLinear } from 'd3-scale';
 import { line } from 'd3-shape';
 import { EpisodeSheet } from './EpisodeSheet';
+import { PointTooltip } from './PointTooltip';
 import type { LinePoint } from '../types';
 
 type CharacterLineProps = {
@@ -120,6 +121,13 @@ export function CharacterLine({ text, points }: CharacterLineProps) {
               cx={cx}
               cy={cy}
               r="2"
+            />
+            <PointTooltip
+              chartWidth={chartWidth}
+              episode={episode}
+              season={season}
+              x={cx}
+              y={cy}
             />
           </g>
         ))}
