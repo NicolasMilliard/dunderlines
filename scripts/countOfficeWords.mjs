@@ -65,13 +65,20 @@ function summarizeEpisode(episode, index) {
     episode: episode.episode,
     title: String(episode.title ?? ''),
     characters: [...characters.values()].sort(
-      (a, b) => b.wordsSpoken - a.wordsSpoken || a.speaker.localeCompare(b.speaker),
+      (a, b) =>
+        b.wordsSpoken - a.wordsSpoken || a.speaker.localeCompare(b.speaker),
     ),
   };
 }
 
 function buildCharacterTimelines(episodes) {
   const characterNames = new Set();
+  const episodeCharacterLookups = episodes.map((episode) => ({
+    episode,
+    characters: new Map(
+      episode.characters.map((character) => [character.speaker, character]),
+    ),
+  }));
 
   for (const episode of episodes) {
     for (const character of episode.characters) {
@@ -81,18 +88,20 @@ function buildCharacterTimelines(episodes) {
 
   return [...characterNames]
     .map((speaker) => {
-      const episodeCounts = episodes.map((episode) => {
-        const character = episode.characters.find((item) => item.speaker === speaker);
+      const episodeCounts = episodeCharacterLookups.map(
+        ({ episode, characters }) => {
+          const character = characters.get(speaker);
 
-        return {
-          id: episode.id,
-          season: episode.season,
-          episode: episode.episode,
-          title: episode.title,
-          wordsSpoken: character?.wordsSpoken ?? 0,
-          lineCount: character?.lineCount ?? 0,
-        };
-      });
+          return {
+            id: episode.id,
+            season: episode.season,
+            episode: episode.episode,
+            title: episode.title,
+            wordsSpoken: character?.wordsSpoken ?? 0,
+            lineCount: character?.lineCount ?? 0,
+          };
+        },
+      );
 
       return {
         speaker,
@@ -100,13 +109,17 @@ function buildCharacterTimelines(episodes) {
           (total, episode) => total + episode.wordsSpoken,
           0,
         ),
-        totalLineCount: episodeCounts.reduce((total, episode) => total + episode.lineCount, 0),
+        totalLineCount: episodeCounts.reduce(
+          (total, episode) => total + episode.lineCount,
+          0,
+        ),
         episodes: episodeCounts,
       };
     })
     .sort(
       (a, b) =>
-        b.totalWordsSpoken - a.totalWordsSpoken || a.speaker.localeCompare(b.speaker),
+        b.totalWordsSpoken - a.totalWordsSpoken ||
+        a.speaker.localeCompare(b.speaker),
     );
 }
 
@@ -128,10 +141,10 @@ async function run() {
   const [inputPath, outputPath = defaultOutputPath] = process.argv.slice(2);
 
   if (!inputPath || inputPath === '-h' || inputPath === '--help') {
-    console.log(`Usage: npm run words:count -- <input-json-path> [output-json-path]
+    console.log(`Usage: bun run words:count -- <input-json-path> [output-json-path]
 
 Example:
-  npm run words:count -- data/the-office-lines.json
+  bun run words:count -- src/data/the-office.json
 
 Default output:
   ${defaultOutputPath}`);

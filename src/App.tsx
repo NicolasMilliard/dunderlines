@@ -1,5 +1,5 @@
 import { CharacterLine } from './components/CharacterLine';
-import { officeCharacters, toLinePoints } from './data/officeCharacters';
+import { officeCharacters } from './data/officeCharacters';
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
           <CharacterLine
             key={character.id}
             text={character.name}
-            points={toLinePoints(character.episodes)}
+            points={character.points}
           />
         ))}
       </div>
