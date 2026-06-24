@@ -32,7 +32,7 @@ const featuredCharacters = [
   { speaker: 'Stanley', id: 'stanley-hudson', name: 'Stanley Hudson' },
   { speaker: 'Robert', id: 'robert-california', name: 'Robert California' },
   { speaker: 'Gabe', id: 'gabe-lewis', name: 'Gabe Lewis' },
-  { speaker: 'David Wallace', id: 'david-wallace', name: 'David Wallace' },
+  { speaker: 'David', id: 'david-wallace', name: 'David Wallace' },
   { speaker: 'Holly', id: 'holly-flax', name: 'Holly Flax' },
   { speaker: 'Meredith', id: 'meredith-palmer', name: 'Meredith Palmer' },
   { speaker: 'Creed', id: 'creed-bratton', name: 'Creed Bratton' },
