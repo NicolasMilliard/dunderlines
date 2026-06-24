@@ -86,6 +86,10 @@ export function CharacterLine({
     }),
   );
 
+  const lineAnimationKey = points
+    .map(([episodeIndex, wordsSpoken]) => `${episodeIndex}-${wordsSpoken}`)
+    .join('|');
+
   return (
     <>
       <div className="w-full max-w-2xl overflow-x-auto overscroll-x-contain max-sm:pb-2">
@@ -102,6 +106,7 @@ export function CharacterLine({
             y={labelY}
           />
           <path
+            key={lineAnimationKey}
             d={d3Line(points) ?? undefined}
             fill="none"
             stroke="black"
@@ -109,6 +114,10 @@ export function CharacterLine({
             strokeLinejoin="round"
             strokeWidth="2"
             vectorEffect="non-scaling-stroke"
+            pathLength={1}
+            strokeDasharray={1}
+            strokeDashoffset={1}
+            className="motion-safe:animate-[draw-line_700ms_ease-out_forwards]"
           />
           {scaledPoints.map(
             ({ cx, cy, episodeIndex, wordsSpoken, season, episode }) => (

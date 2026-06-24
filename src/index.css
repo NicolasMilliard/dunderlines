@@ -96,3 +96,9 @@
     transform: translateY(100%);
   }
 }
+
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
