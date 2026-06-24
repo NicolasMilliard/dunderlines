@@ -120,7 +120,7 @@ export function EpisodeSheet({
     >
       <aside
         ref={sheetRef}
-        className={`fixed top-0 right-0 h-full w-full max-w-105 overflow-y-auto border-l border-black/10 bg-white p-6 shadow-[-16px_0_40px_rgb(0_0_0/0.14)] transition-transform duration-200 ease-out outline-none max-sm:top-auto max-sm:bottom-0 max-sm:h-auto max-sm:max-h-[88vh] max-sm:min-h-[320px] max-sm:max-w-none max-sm:border-l-0 max-sm:border-t max-sm:shadow-[0_-16px_40px_rgb(0_0_0_/_0.14)] ${
+        className={`fixed top-0 right-0 h-full w-full max-w-105 overflow-y-auto border-l border-black/10 bg-white p-6 shadow-[-16px_0_40px_rgb(0_0_0/0.14)] transition-transform duration-200 ease-out outline-none max-sm:top-auto max-sm:bottom-0 max-sm:h-auto max-sm:max-h-[88vh] max-sm:min-h-80 max-sm:max-w-none max-sm:border-l-0 max-sm:border-t max-sm:shadow-[0_-16px_40px_rgb(0_0_0/0.14)] ${
           isVisible
             ? 'translate-x-0 max-sm:translate-y-0'
             : 'translate-x-full max-sm:translate-x-0 max-sm:translate-y-full'
