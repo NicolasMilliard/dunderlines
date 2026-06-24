@@ -6,6 +6,7 @@ import {
   hasTmdbCredentials,
   type TmdbEpisodeDetails,
 } from '../services/tmdb';
+import { getScrantonicityEpisodeUrl } from '../services/scrantonicity';
 import { EpisodeSheetSkeleton } from './EpisodeSheetSkeleton';
 import { EpisodeSheetUnavailable } from './EpisodeSheetUnavailable';
 
@@ -36,6 +37,7 @@ export function EpisodeSheet({
   const closeTimeoutRef = useRef<number | null>(null);
   const sheetRef = useRef<HTMLElement>(null);
   const tmdbUrl = getTmdbEpisodeUrl(season, episode);
+  const scrantonicityUrl = getScrantonicityEpisodeUrl(season, episode);
 
   const requestClose = useCallback(() => {
     if (closeTimeoutRef.current !== null) {
@@ -212,6 +214,15 @@ export function EpisodeSheet({
             target="_blank"
           >
             View on TMDB
+          </a>
+
+          <a
+            className="mt-2 inline-flex text-sm font-semibold text-black underline decoration-black/30 underline-offset-4 hover:decoration-black"
+            href={scrantonicityUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            Read script
           </a>
         </div>
       </aside>
