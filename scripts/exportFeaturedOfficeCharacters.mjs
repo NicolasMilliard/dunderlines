@@ -5,7 +5,7 @@ import path from 'node:path';
 import {
   countWords,
   getEpisodes,
-  normalizeSpeaker,
+  normalizeSpeakers,
   parseJsonFile,
 } from './countOfficeWords.mjs';
 
@@ -65,17 +65,23 @@ function buildFeaturedCharacters(data) {
       }
 
       for (const entry of scene) {
-        const speaker = normalizeSpeaker(entry?.speaker);
+        const speakers = normalizeSpeakers(entry?.speaker);
+        const words = countWords(entry?.line);
 
-        if (!speakerMap.has(speaker)) {
+        if (words === 0) {
           continue;
         }
 
-        const words = countWords(entry?.line);
-        episodeWordsBySpeaker.set(
-          speaker,
-          (episodeWordsBySpeaker.get(speaker) ?? 0) + words,
-        );
+        for (const speaker of speakers) {
+          if (!speakerMap.has(speaker)) {
+            continue;
+          }
+
+          episodeWordsBySpeaker.set(
+            speaker,
+            (episodeWordsBySpeaker.get(speaker) ?? 0) + words,
+          );
+        }
       }
     }
 
@@ -97,10 +103,33 @@ function buildFeaturedCharacters(data) {
 }
 
 function toTypeScript(characters) {
+  const formattedCharacters = characters.map(formatCharacter).join('\n');
+
   return `import type { CharacterLineData } from '../../types';
 
-export const featuredOfficeCharacterLines = ${JSON.stringify(characters)} satisfies CharacterLineData[];
+export const featuredOfficeCharacterLines = [
+${formattedCharacters}
+] satisfies CharacterLineData[];
 `;
+}
+
+function formatCharacter(character) {
+  return `  {
+    id: ${formatString(character.id)},
+    name: ${formatString(character.name)},
+    totalWordsSpoken: ${character.totalWordsSpoken},
+    points: [
+${character.points.map(formatPoint).join('\n')}
+    ],
+  },`;
+}
+
+function formatPoint(point) {
+  return `      [${point.join(', ')}],`;
+}
+
+function formatString(value) {
+  return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
 }
 
 async function run() {

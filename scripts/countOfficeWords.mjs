@@ -6,13 +6,18 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const defaultOutputPath = path.join(os.tmpdir(), 'officeWordCounts.json');
+const bracketedTextPattern = /\[[^\]]*]/g;
 
 export function countWords(line) {
   if (typeof line !== 'string') {
     return 0;
   }
 
-  return line.match(/[\p{L}\p{N}]+(?:[-'’][\p{L}\p{N}]+)*/gu)?.length ?? 0;
+  const spokenLine = line.replace(bracketedTextPattern, ' ');
+
+  return (
+    spokenLine.match(/[\p{L}\p{N}]+(?:[-'’][\p{L}\p{N}]+)*/gu)?.length ?? 0
+  );
 }
 
 export function getEpisodes(data) {
@@ -31,6 +36,13 @@ export function normalizeSpeaker(speaker) {
   return typeof speaker === 'string' ? speaker.trim() : '';
 }
 
+export function normalizeSpeakers(speaker) {
+  return normalizeSpeaker(speaker)
+    .split(',')
+    .map((name) => name.trim())
+    .filter(Boolean);
+}
+
 function summarizeEpisode(episode, index) {
   const characters = new Map();
   const scenes = Array.isArray(episode.scenes) ? episode.scenes : [];
@@ -41,22 +53,24 @@ function summarizeEpisode(episode, index) {
     }
 
     for (const entry of scene) {
-      const speaker = normalizeSpeaker(entry?.speaker);
+      const speakers = normalizeSpeakers(entry?.speaker);
       const words = countWords(entry?.line);
 
-      if (!speaker || words === 0) {
+      if (speakers.length === 0 || words === 0) {
         continue;
       }
 
-      const current = characters.get(speaker) ?? {
-        speaker,
-        wordsSpoken: 0,
-        lineCount: 0,
-      };
+      for (const speaker of speakers) {
+        const current = characters.get(speaker) ?? {
+          speaker,
+          wordsSpoken: 0,
+          lineCount: 0,
+        };
 
-      current.wordsSpoken += words;
-      current.lineCount += 1;
-      characters.set(speaker, current);
+        current.wordsSpoken += words;
+        current.lineCount += 1;
+        characters.set(speaker, current);
+      }
     }
   }
 
