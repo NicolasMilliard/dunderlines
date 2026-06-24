@@ -42,7 +42,12 @@ export function getTmdbEpisodeDetails(season: number, episodeNumber: number) {
     return cachedEpisode;
   }
 
-  const episodeRequest = fetchTmdbEpisodeDetails(season, episodeNumber);
+  const episodeRequest = fetchTmdbEpisodeDetails(season, episodeNumber).catch(
+    (error) => {
+      episodeCache.delete(cacheKey);
+      throw error;
+    },
+  );
   episodeCache.set(cacheKey, episodeRequest);
 
   return episodeRequest;
