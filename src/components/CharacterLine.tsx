@@ -2,11 +2,13 @@ import { scaleLinear } from 'd3-scale';
 import { line } from 'd3-shape';
 import { useState } from 'react';
 import type { LinePoint } from '../types';
+import { CharacterLineLabel } from './CharacterLineLabel';
 import { EpisodeSheet } from './EpisodeSheet';
 import { PointTooltip } from './PointTooltip';
 
 type CharacterLineProps = {
   text: string;
+  totalWordsSpoken: number;
   points: LinePoint[];
 };
 
@@ -21,10 +23,14 @@ const chartMargin = {
   top: 8,
   right: 8,
   bottom: 8,
-  left: 120,
+  left: 132,
 };
 
-export function CharacterLine({ text, points }: CharacterLineProps) {
+export function CharacterLine({
+  text,
+  totalWordsSpoken,
+  points,
+}: CharacterLineProps) {
   const [selectedPoint, setSelectedPoint] = useState<SelectedPoint | null>(
     null,
   );
@@ -64,7 +70,11 @@ export function CharacterLine({ text, points }: CharacterLineProps) {
 
   const labelPoint = points[0];
   const labelX = xScale(labelPoint[0]) - 12;
-  const labelY = yScale(labelPoint[1]);
+  const formattedTotalWords = totalWordsSpoken.toLocaleString();
+  const labelY = Math.min(
+    yScale(labelPoint[1]),
+    chartHeight - chartMargin.bottom - 13,
+  );
   const scaledPoints = points.map(
     ([episodeIndex, wordsSpoken, season, episode]) => ({
       cx: xScale(episodeIndex),
@@ -82,19 +92,14 @@ export function CharacterLine({ text, points }: CharacterLineProps) {
         className="h-auto w-full max-w-xl"
         viewBox={`0 0 ${chartWidth} ${chartHeight}`}
         role="img"
-        aria-label={`${text} words spoken over time`}
+        aria-label={`${text}: ${formattedTotalWords} words spoken over time`}
       >
-        <text
+        <CharacterLineLabel
+          name={text}
+          totalWordsSpoken={totalWordsSpoken}
           x={labelX}
           y={labelY}
-          dy="0.35em"
-          fill="black"
-          fontSize="12"
-          fontWeight="600"
-          textAnchor="end"
-        >
-          {text}
-        </text>
+        />
         <path
           d={d3Line(points) ?? undefined}
           fill="none"

@@ -13,6 +13,7 @@ function App() {
           <CharacterLine
             key={character.id}
             text={character.name}
+            totalWordsSpoken={character.totalWordsSpoken}
             points={character.points}
           />
         ))}
