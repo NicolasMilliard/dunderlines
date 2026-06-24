@@ -88,60 +88,62 @@ export function CharacterLine({
 
   return (
     <>
-      <svg
-        className="h-auto w-full max-w-2xl"
-        viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-        role="img"
-        aria-label={`${text}: ${formattedTotalWords} words spoken over time`}
-      >
-        <CharacterLineLabel
-          name={text}
-          totalWordsSpoken={totalWordsSpoken}
-          x={labelX}
-          y={labelY}
-        />
-        <path
-          d={d3Line(points) ?? undefined}
-          fill="none"
-          stroke="black"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          vectorEffect="non-scaling-stroke"
-        />
-        {scaledPoints.map(
-          ({ cx, cy, episodeIndex, wordsSpoken, season, episode }) => (
-            <g
-              key={episodeIndex}
-              className="group cursor-pointer outline-none"
-              role="button"
-              tabIndex={0}
-              aria-label={`${text}, season ${season}, episode ${episode}: ${wordsSpoken} words`}
-              onClick={() => setSelectedPoint({ season, episode })}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  setSelectedPoint({ season, episode });
-                }
-              }}
-            >
-              <circle cx={cx} cy={cy} r="6" fill="transparent" />
-              <circle
-                className="origin-center fill-transparent opacity-45 transition-[opacity,transform] duration-150 ease-in-out transform-fill group-hover:scale-[1.8] group-hover:fill-black group-hover:opacity-100 group-focus-visible:scale-[1.8] group-focus-visible:fill-black group-focus-visible:opacity-100"
-                cx={cx}
-                cy={cy}
-                r="2"
-              />
-              <PointTooltip
-                chartWidth={chartWidth}
-                wordsSpoken={wordsSpoken}
-                x={cx}
-                y={cy}
-              />
-            </g>
-          ),
-        )}
-      </svg>
+      <div className="w-full max-w-2xl overflow-x-auto overscroll-x-contain max-sm:pb-2">
+        <svg
+          className="h-auto w-full max-sm:w-170 max-sm:max-w-none"
+          viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+          role="img"
+          aria-label={`${text}: ${formattedTotalWords} words spoken over time`}
+        >
+          <CharacterLineLabel
+            name={text}
+            totalWordsSpoken={totalWordsSpoken}
+            x={labelX}
+            y={labelY}
+          />
+          <path
+            d={d3Line(points) ?? undefined}
+            fill="none"
+            stroke="black"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            vectorEffect="non-scaling-stroke"
+          />
+          {scaledPoints.map(
+            ({ cx, cy, episodeIndex, wordsSpoken, season, episode }) => (
+              <g
+                key={episodeIndex}
+                className="group cursor-pointer outline-none"
+                role="button"
+                tabIndex={0}
+                aria-label={`${text}, season ${season}, episode ${episode}: ${wordsSpoken} words`}
+                onClick={() => setSelectedPoint({ season, episode })}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setSelectedPoint({ season, episode });
+                  }
+                }}
+              >
+                <circle cx={cx} cy={cy} r="6" fill="transparent" />
+                <circle
+                  className="origin-center fill-transparent opacity-45 transition-[opacity,transform] duration-150 ease-in-out transform-fill group-hover:scale-[1.8] group-hover:fill-black group-hover:opacity-100 group-focus-visible:scale-[1.8] group-focus-visible:fill-black group-focus-visible:opacity-100"
+                  cx={cx}
+                  cy={cy}
+                  r="2"
+                />
+                <PointTooltip
+                  chartWidth={chartWidth}
+                  wordsSpoken={wordsSpoken}
+                  x={cx}
+                  y={cy}
+                />
+              </g>
+            ),
+          )}
+        </svg>
+      </div>
 
       {selectedPoint ? (
         <EpisodeSheet
