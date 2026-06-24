@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { CharacterLine } from './components/CharacterLine';
 import { MultiSelectDropdown } from './components/MultiSelectDropdown';
 import { officeCharacters } from './data/officeCharacters';
@@ -30,25 +30,28 @@ function App() {
   const [selectedSeasonValues, setSelectedSeasonValues] =
     useState<string[]>(allSeasonValues);
 
-  const selectedCharacterIdSet = new Set(selectedCharacterIds);
-  const selectedSeasonValueSet = new Set(selectedSeasonValues);
-  const visibleCharacters = officeCharacters
-    .filter((character) => selectedCharacterIdSet.has(character.id))
-    .map((character) => {
-      const points = character.points.filter(([, , season]) =>
-        selectedSeasonValueSet.has(String(season)),
-      );
+  const visibleCharacters = useMemo(() => {
+    const selectedCharacterIdSet = new Set(selectedCharacterIds);
+    const selectedSeasonValueSet = new Set(selectedSeasonValues);
 
-      return {
-        ...character,
-        points,
-        totalWordsSpoken: points.reduce(
-          (total, [, wordsSpoken]) => total + wordsSpoken,
-          0,
-        ),
-      };
-    })
-    .filter((character) => character.points.length > 0);
+    return officeCharacters
+      .filter((character) => selectedCharacterIdSet.has(character.id))
+      .map((character) => {
+        const points = character.points.filter(([, , season]) =>
+          selectedSeasonValueSet.has(String(season)),
+        );
+
+        return {
+          ...character,
+          points,
+          totalWordsSpoken: points.reduce(
+            (total, [, wordsSpoken]) => total + wordsSpoken,
+            0,
+          ),
+        };
+      })
+      .filter((character) => character.points.length > 0);
+  }, [selectedCharacterIds, selectedSeasonValues]);
 
   function toggleSelectedCharacter(characterId: string) {
     setSelectedCharacterIds((currentIds) =>
