@@ -1,14 +1,20 @@
-import { X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { getScrantonicityEpisodeUrl } from '../services/scrantonicity';
 import {
   getTmdbEpisodeDetails,
   getTmdbEpisodeUrl,
   hasTmdbCredentials,
   type TmdbEpisodeDetails,
 } from '../services/tmdb';
-import { getScrantonicityEpisodeUrl } from '../services/scrantonicity';
 import { EpisodeSheetSkeleton } from './EpisodeSheetSkeleton';
 import { EpisodeSheetUnavailable } from './EpisodeSheetUnavailable';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from './ui/sheet';
 
 type EpisodeSheetProps = {
   characterName: string;
@@ -30,12 +36,11 @@ export function EpisodeSheet({
   episode,
   onClose,
 }: EpisodeSheetProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [episodeDetails, setEpisodeDetails] = useState<EpisodeDetailsState>({
     status: hasTmdbCredentials ? 'loading' : 'unavailable',
   });
   const closeTimeoutRef = useRef<number | null>(null);
-  const sheetRef = useRef<HTMLElement>(null);
   const tmdbUrl = getTmdbEpisodeUrl(season, episode);
   const scrantonicityUrl = getScrantonicityEpisodeUrl(season, episode);
 
@@ -44,26 +49,24 @@ export function EpisodeSheet({
       return;
     }
 
-    setIsVisible(false);
+    setIsOpen(false);
     closeTimeoutRef.current = window.setTimeout(onClose, sheetAnimationMs);
   }, [onClose]);
 
+  const handleOpenChange = useCallback(
+    (nextIsOpen: boolean) => {
+      if (nextIsOpen) {
+        setIsOpen(true);
+        return;
+      }
+
+      requestClose();
+    },
+    [requestClose],
+  );
+
   useEffect(() => {
-    const frameId = requestAnimationFrame(() => {
-      setIsVisible(true);
-      sheetRef.current?.focus();
-    });
-
-    return () => cancelAnimationFrame(frameId);
-  }, []);
-
-  useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
     return () => {
-      document.body.style.overflow = originalOverflow;
-
       if (closeTimeoutRef.current !== null) {
         window.clearTimeout(closeTimeoutRef.current);
       }
@@ -85,9 +88,9 @@ export function EpisodeSheet({
 
         return getTmdbEpisodeDetails(season, episode);
       })
-      .then((episode) => {
+      .then((episodeDetails) => {
         if (isActive) {
-          setEpisodeDetails({ status: 'ready', episode });
+          setEpisodeDetails({ status: 'ready', episode: episodeDetails });
         }
       })
       .catch(() => {
@@ -101,51 +104,21 @@ export function EpisodeSheet({
     };
   }, [episode, season]);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        requestClose();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [requestClose]);
-
   return (
-    <div
-      className={`fixed inset-0 z-50 bg-black/20 transition-opacity duration-200 ease-out ${
-        isVisible ? 'opacity-100' : 'opacity-0'
-      }`}
-      onClick={requestClose}
-    >
-      <aside
-        ref={sheetRef}
-        className={`fixed top-0 right-0 h-full w-full max-w-105 overflow-y-auto border-l border-black/10 bg-white p-6 shadow-[-16px_0_40px_rgb(0_0_0/0.14)] transition-transform duration-200 ease-out outline-none max-sm:top-auto max-sm:bottom-0 max-sm:h-auto max-sm:max-h-[88vh] max-sm:min-h-80 max-sm:max-w-none max-sm:border-l-0 max-sm:border-t max-sm:shadow-[0_-16px_40px_rgb(0_0_0/0.14)] ${
-          isVisible
-            ? 'translate-x-0 max-sm:translate-y-0'
-            : 'translate-x-full max-sm:translate-x-0 max-sm:translate-y-full'
-        }`}
-        aria-label={`${characterName} episode details`}
-        aria-modal="true"
-        onClick={(event) => event.stopPropagation()}
-        role="dialog"
-        tabIndex={-1}
-      >
-        <button
-          className="absolute top-4 right-4 flex size-8 cursor-pointer items-center justify-center rounded-full border border-black/10 bg-white text-[22px] leading-none text-black"
-          type="button"
-          aria-label="Close episode details"
-          onClick={requestClose}
-        >
-          <X size={18} strokeWidth={2} aria-hidden="true" />
-        </button>
+    <Sheet open={isOpen} onOpenChange={handleOpenChange}>
+      <SheetContent>
+        <SheetHeader className="sr-only">
+          <SheetTitle>{characterName} episode details</SheetTitle>
+          <SheetDescription>
+            Season {season}, episode {episode}
+          </SheetDescription>
+        </SheetHeader>
+
         <div className="mt-12 grid gap-5">
           {episodeDetails.status === 'loading' ? (
             <>
               <p className="sr-only" role="status">
-                Loading episode details from TMDB.
+                Loading episode details.
               </p>
               <EpisodeSheetSkeleton />
             </>
@@ -157,7 +130,7 @@ export function EpisodeSheet({
                 <img
                   className="aspect-video w-full rounded-lg object-cover"
                   src={episodeDetails.episode.imageUrl}
-                  alt=""
+                  alt={episodeDetails.episode.title}
                 />
               ) : null}
 
@@ -186,7 +159,7 @@ export function EpisodeSheet({
                 <div className="flex items-baseline justify-between gap-4 border-b border-black/10 pb-3">
                   <dt className="text-sm text-black/60">Rating</dt>
                   <dd className="m-0 text-2xl font-bold text-black">
-                    {episodeDetails.episode.voteAverage?.toFixed(1) ?? '—'}
+                    {episodeDetails.episode.voteAverage?.toFixed(1) ?? '-'}
                     <span className="text-sm font-medium text-black/50">
                       {' '}
                       / 10
@@ -225,7 +198,7 @@ export function EpisodeSheet({
             Read script
           </a>
         </div>
-      </aside>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 }

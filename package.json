@@ -11,6 +11,7 @@
     "words:featured": "node scripts/exportFeaturedOfficeCharacters.mjs"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "1.1.17",
     "@radix-ui/react-dropdown-menu": "2.1.18",
     "@tailwindcss/vite": "4.3.1",
     "clsx": "2.1.1",
