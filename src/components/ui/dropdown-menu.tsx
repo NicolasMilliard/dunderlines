@@ -89,7 +89,7 @@ function DropdownMenuCheckboxItem({
       )}
       {...props}
     >
-      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center rounded-md border border-black/10 bg-white text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.7)] transition-colors group-data-[state=checked]:border-black group-data-[state=checked]:bg-black">
+      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center rounded-md  bg-white text-white transition-colors group-data-[state=checked]:bg-black">
         <DropdownMenuPrimitive.ItemIndicator>
           <CheckIcon className="size-3" strokeWidth={2.4} />
         </DropdownMenuPrimitive.ItemIndicator>
