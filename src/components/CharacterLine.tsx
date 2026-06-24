@@ -129,8 +129,7 @@ export function CharacterLine({ text, points }: CharacterLineProps) {
               />
               <PointTooltip
                 chartWidth={chartWidth}
-                episode={episode}
-                season={season}
+                wordsSpoken={wordsSpoken}
                 x={cx}
                 y={cy}
               />
