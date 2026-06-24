@@ -1,9 +1,9 @@
-import { useState } from 'react';
 import { scaleLinear } from 'd3-scale';
 import { line } from 'd3-shape';
+import { useState } from 'react';
+import type { LinePoint } from '../types';
 import { EpisodeSheet } from './EpisodeSheet';
 import { PointTooltip } from './PointTooltip';
-import type { LinePoint } from '../types';
 
 type CharacterLineProps = {
   text: string;
@@ -25,7 +25,9 @@ const chartMargin = {
 };
 
 export function CharacterLine({ text, points }: CharacterLineProps) {
-  const [selectedPoint, setSelectedPoint] = useState<SelectedPoint | null>(null);
+  const [selectedPoint, setSelectedPoint] = useState<SelectedPoint | null>(
+    null,
+  );
 
   if (points.length === 0) {
     return null;
@@ -63,14 +65,16 @@ export function CharacterLine({ text, points }: CharacterLineProps) {
   const labelPoint = points[0];
   const labelX = xScale(labelPoint[0]) - 12;
   const labelY = yScale(labelPoint[1]);
-  const scaledPoints = points.map(([episodeIndex, wordsSpoken, season, episode]) => ({
-    cx: xScale(episodeIndex),
-    cy: yScale(wordsSpoken),
-    episodeIndex,
-    season,
-    episode,
-    wordsSpoken,
-  }));
+  const scaledPoints = points.map(
+    ([episodeIndex, wordsSpoken, season, episode]) => ({
+      cx: xScale(episodeIndex),
+      cy: yScale(wordsSpoken),
+      episodeIndex,
+      season,
+      episode,
+      wordsSpoken,
+    }),
+  );
 
   return (
     <>
@@ -100,37 +104,39 @@ export function CharacterLine({ text, points }: CharacterLineProps) {
           strokeWidth="2"
           vectorEffect="non-scaling-stroke"
         />
-        {scaledPoints.map(({ cx, cy, episodeIndex, wordsSpoken, season, episode }) => (
-          <g
-            key={episodeIndex}
-            className="group cursor-pointer outline-none"
-            role="button"
-            tabIndex={0}
-            aria-label={`${text}, season ${season}, episode ${episode}: ${wordsSpoken} words`}
-            onClick={() => setSelectedPoint({ season, episode })}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                setSelectedPoint({ season, episode });
-              }
-            }}
-          >
-            <circle cx={cx} cy={cy} r="6" fill="transparent" />
-            <circle
-              className="origin-center fill-transparent opacity-45 transition-[opacity,transform] duration-150 ease-in-out [transform-box:fill-box] group-hover:scale-[1.8] group-hover:fill-black group-hover:opacity-100 group-focus-visible:scale-[1.8] group-focus-visible:fill-black group-focus-visible:opacity-100"
-              cx={cx}
-              cy={cy}
-              r="2"
-            />
-            <PointTooltip
-              chartWidth={chartWidth}
-              episode={episode}
-              season={season}
-              x={cx}
-              y={cy}
-            />
-          </g>
-        ))}
+        {scaledPoints.map(
+          ({ cx, cy, episodeIndex, wordsSpoken, season, episode }) => (
+            <g
+              key={episodeIndex}
+              className="group cursor-pointer outline-none"
+              role="button"
+              tabIndex={0}
+              aria-label={`${text}, season ${season}, episode ${episode}: ${wordsSpoken} words`}
+              onClick={() => setSelectedPoint({ season, episode })}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  setSelectedPoint({ season, episode });
+                }
+              }}
+            >
+              <circle cx={cx} cy={cy} r="6" fill="transparent" />
+              <circle
+                className="origin-center fill-transparent opacity-45 transition-[opacity,transform] duration-150 ease-in-out transform-fill group-hover:scale-[1.8] group-hover:fill-black group-hover:opacity-100 group-focus-visible:scale-[1.8] group-focus-visible:fill-black group-focus-visible:opacity-100"
+                cx={cx}
+                cy={cy}
+                r="2"
+              />
+              <PointTooltip
+                chartWidth={chartWidth}
+                episode={episode}
+                season={season}
+                x={cx}
+                y={cy}
+              />
+            </g>
+          ),
+        )}
       </svg>
 
       {selectedPoint ? (

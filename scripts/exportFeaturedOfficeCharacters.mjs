@@ -27,7 +27,7 @@ const featuredCharacters = [
   { speaker: 'Kelly', id: 'kelly-kapoor', name: 'Kelly Kapoor' },
   { speaker: 'Jan', id: 'jan-levinson', name: 'Jan Levinson' },
   { speaker: 'Toby', id: 'toby-flanderson', name: 'Toby Flanderson' },
-  { speaker: 'Phyllis', id: 'phyllis-smith', name: 'Phyllis Smith' },
+  { speaker: 'Phyllis', id: 'phyllis-vance', name: 'Phyllis Vance' },
   { speaker: 'Nellie', id: 'nellie-bertram', name: 'Nellie Bertram' },
   { speaker: 'Stanley', id: 'stanley-hudson', name: 'Stanley Hudson' },
   { speaker: 'Robert', id: 'robert-california', name: 'Robert California' },

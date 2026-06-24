@@ -1,1 +1,14 @@
 @import 'tailwindcss';
+
+@font-face {
+  font-family: 'American Typewriter';
+  src: url('./fonts/American Typewriter Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@theme {
+  --font-title:
+    'American Typewriter', ui-serif, Georgia, Cambria, 'Times New Roman', Times,
+    serif;
+}
