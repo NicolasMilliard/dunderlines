@@ -44,15 +44,19 @@ export function MultiSelectDropdown({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="group flex min-w-36 cursor-pointer items-center justify-between gap-2 rounded-md border border-black/10 bg-white px-2.5 py-1.5 text-left text-xs shadow-sm outline-none transition-colors hover:bg-black/[0.03] focus-visible:ring-2 focus-visible:ring-black/20 data-[state=open]:bg-black/[0.03]"
+          className="group flex h-9 min-w-34 cursor-pointer items-center justify-between gap-2 rounded-xl border border-black/10 bg-white/85 px-2.5 text-left text-xs shadow-[0_1px_1px_rgb(0_0_0/0.04),0_8px_24px_rgb(0_0_0/0.06)] outline-none backdrop-blur transition-all duration-150 hover:-translate-y-px hover:border-black/15 hover:bg-white focus-visible:ring-2 focus-visible:ring-black/15 data-[state=open]:-translate-y-px data-[state=open]:border-black/15 data-[state=open]:bg-white data-[state=open]:shadow-[0_1px_1px_rgb(0_0_0/0.04),0_12px_28px_rgb(0_0_0/0.1)]"
           type="button"
+          aria-label={`${label}: ${summary}`}
         >
-          <span className="grid gap-0.5">
-            <span className="font-medium text-black">{label}</span>
-            <span className="text-[11px] text-black/50">{summary}</span>
+          <span className="flex min-w-0 items-center gap-2">
+            <span className="truncate font-medium text-black/85">{label}</span>
+            <span className="h-3.5 w-px bg-black/10" aria-hidden="true" />
+            <span className="truncate font-medium text-black/45">
+              {summary}
+            </span>
           </span>
           <ChevronDown
-            className="size-3.5 text-black/55 transition-transform group-data-[state=open]:rotate-180"
+            className="size-3.5 shrink-0 text-black/45 transition-transform duration-150 group-hover:text-black/70 group-data-[state=open]:rotate-180 group-data-[state=open]:text-black/70"
             strokeWidth={2}
             aria-hidden="true"
           />
@@ -60,10 +64,13 @@ export function MultiSelectDropdown({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>{label}</DropdownMenuLabel>
-        <div className="flex gap-1 px-1">
+        <DropdownMenuLabel>
+          <span>{label}</span>
+          <span>{summary}</span>
+        </DropdownMenuLabel>
+        <div className="grid grid-cols-2 gap-1 p-1">
           <DropdownMenuItem
-            className="flex-1 justify-center text-xs font-semibold"
+            className="justify-center text-xs font-medium"
             onSelect={(event) => {
               event.preventDefault();
               onSelectAll();
@@ -72,7 +79,7 @@ export function MultiSelectDropdown({
             All
           </DropdownMenuItem>
           <DropdownMenuItem
-            className="flex-1 justify-center text-xs font-semibold"
+            className="justify-center text-xs font-medium"
             onSelect={(event) => {
               event.preventDefault();
               onClear();
