@@ -17,7 +17,7 @@ type SelectedPoint = {
   episode: number;
 };
 
-const chartWidth = 580;
+const chartWidth = 680;
 const chartHeight = 64;
 const chartMargin = {
   top: 8,
@@ -89,7 +89,7 @@ export function CharacterLine({
   return (
     <>
       <svg
-        className="h-auto w-full max-w-xl"
+        className="h-auto w-full max-w-2xl"
         viewBox={`0 0 ${chartWidth} ${chartHeight}`}
         role="img"
         aria-label={`${text}: ${formattedTotalWords} words spoken over time`}
