@@ -53,8 +53,15 @@ for the word-counting rules and script details.
 
 ## Optional TMDB Data
 
-Episode details can be enriched with TMDB data. Add a local `.env.local` file:
+Episode details are generated at build time from TMDB. Add a local `.env.local`
+file:
 
 ```text
-VITE_TMDB_READ_ACCESS_TOKEN=your_token_here
+TMDB_READ_ACCESS_TOKEN=your_token_here
+```
+
+Then refresh the generated episode metadata:
+
+```bash
+bun run tmdb:episodes
 ```

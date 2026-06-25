@@ -3,10 +3,8 @@ import { getScrantonicityEpisodeUrl } from '../services/scrantonicity';
 import {
   getTmdbEpisodeDetails,
   getTmdbEpisodeUrl,
-  hasTmdbCredentials,
   type TmdbEpisodeDetails,
 } from '../services/tmdb';
-import { EpisodeSheetSkeleton } from './EpisodeSheetSkeleton';
 import { EpisodeSheetUnavailable } from './EpisodeSheetUnavailable';
 import {
   Sheet,
@@ -26,7 +24,6 @@ type EpisodeSheetProps = {
 const sheetAnimationMs = 200;
 
 type EpisodeDetailsState =
-  | { status: 'loading' }
   | { status: 'ready'; episode: TmdbEpisodeDetails }
   | { status: 'unavailable' };
 
@@ -37,12 +34,13 @@ export function EpisodeSheet({
   onClose,
 }: EpisodeSheetProps) {
   const [isOpen, setIsOpen] = useState(true);
-  const [episodeDetails, setEpisodeDetails] = useState<EpisodeDetailsState>({
-    status: hasTmdbCredentials ? 'loading' : 'unavailable',
-  });
   const closeTimeoutRef = useRef<number | null>(null);
   const tmdbUrl = getTmdbEpisodeUrl(season, episode);
   const scrantonicityUrl = getScrantonicityEpisodeUrl(season, episode);
+  const generatedEpisodeDetails = getTmdbEpisodeDetails(season, episode);
+  const episodeDetails: EpisodeDetailsState = generatedEpisodeDetails
+    ? { status: 'ready', episode: generatedEpisodeDetails }
+    : { status: 'unavailable' };
 
   const requestClose = useCallback(() => {
     if (closeTimeoutRef.current !== null) {
@@ -73,37 +71,6 @@ export function EpisodeSheet({
     };
   }, []);
 
-  useEffect(() => {
-    if (!hasTmdbCredentials) {
-      return;
-    }
-
-    let isActive = true;
-
-    Promise.resolve()
-      .then(() => {
-        if (isActive) {
-          setEpisodeDetails({ status: 'loading' });
-        }
-
-        return getTmdbEpisodeDetails(season, episode);
-      })
-      .then((episodeDetails) => {
-        if (isActive) {
-          setEpisodeDetails({ status: 'ready', episode: episodeDetails });
-        }
-      })
-      .catch(() => {
-        if (isActive) {
-          setEpisodeDetails({ status: 'unavailable' });
-        }
-      });
-
-    return () => {
-      isActive = false;
-    };
-  }, [episode, season]);
-
   return (
     <Sheet open={isOpen} onOpenChange={handleOpenChange}>
       <SheetContent>
@@ -115,15 +82,6 @@ export function EpisodeSheet({
         </SheetHeader>
 
         <div className="mt-12 grid gap-5">
-          {episodeDetails.status === 'loading' ? (
-            <>
-              <p className="sr-only" role="status">
-                Loading episode details.
-              </p>
-              <EpisodeSheetSkeleton />
-            </>
-          ) : null}
-
           {episodeDetails.status === 'ready' ? (
             <>
               {episodeDetails.episode.imageUrl ? (
