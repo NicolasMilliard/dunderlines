@@ -35,7 +35,7 @@ function SheetOverlay({
     <DialogPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        'fixed inset-0 z-50 bg-black/20 data-[state=closed]:animate-[sheet-overlay-out_160ms_ease-in] data-[state=open]:animate-[sheet-overlay-in_200ms_ease-out]',
+        'fixed inset-0 z-50 bg-black/20 will-change-opacity data-[state=closed]:animate-[sheet-overlay-out_160ms_ease-in] data-[state=open]:animate-[sheet-overlay-in_200ms_ease-out]',
         className,
       )}
       {...props}
@@ -54,7 +54,7 @@ function SheetContent({
       <DialogPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          'fixed top-0 right-0 z-50 h-full w-full max-w-105 overflow-y-auto border-l border-black/10 bg-white p-6 shadow-[-16px_0_40px_rgb(0_0_0/0.14)] outline-none data-[state=closed]:animate-[sheet-out-right_160ms_ease-in] data-[state=open]:animate-[sheet-in-right_200ms_ease-out] max-sm:top-auto max-sm:bottom-0 max-sm:h-auto max-sm:max-h-[88vh] max-sm:min-h-80 max-sm:max-w-none max-sm:border-l-0 max-sm:border-t max-sm:shadow-[0_-16px_40px_rgb(0_0_0/0.14)] max-sm:data-[state=closed]:animate-[sheet-out-bottom_160ms_ease-in] max-sm:data-[state=open]:animate-[sheet-in-bottom_200ms_ease-out]',
+          'fixed top-0 right-0 z-50 h-full w-full max-w-105 transform-gpu overflow-y-auto border-l border-black/10 bg-white p-6 shadow-[-16px_0_40px_rgb(0_0_0/0.14)] outline-none will-change-transform data-[state=closed]:animate-[sheet-out-right_160ms_ease-in] data-[state=open]:animate-[sheet-in-right_200ms_ease-out] max-sm:top-auto max-sm:bottom-0 max-sm:h-auto max-sm:max-h-[88vh] max-sm:min-h-80 max-sm:max-w-none max-sm:border-l-0 max-sm:border-t max-sm:shadow-[0_-16px_40px_rgb(0_0_0/0.14)] max-sm:data-[state=closed]:animate-[sheet-out-bottom_160ms_ease-in] max-sm:data-[state=open]:animate-[sheet-in-bottom_200ms_ease-out]',
           className,
         )}
         {...props}

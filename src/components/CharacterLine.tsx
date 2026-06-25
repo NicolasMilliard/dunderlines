@@ -17,6 +17,13 @@ type SelectedPoint = {
   episode: number;
 };
 
+type ActivePoint = {
+  episodeIndex: number;
+  wordsSpoken: number;
+  x: number;
+  y: number;
+};
+
 const chartWidth = 680;
 const chartHeight = 64;
 const chartMargin = {
@@ -34,6 +41,7 @@ export function CharacterLine({
   const [selectedPoint, setSelectedPoint] = useState<SelectedPoint | null>(
     null,
   );
+  const [activePoint, setActivePoint] = useState<ActivePoint | null>(null);
 
   if (points.length === 0) {
     return null;
@@ -127,7 +135,44 @@ export function CharacterLine({
                 role="button"
                 tabIndex={0}
                 aria-label={`${text}, season ${season}, episode ${episode}: ${wordsSpoken} words`}
-                onClick={() => setSelectedPoint({ season, episode })}
+                onPointerEnter={(event) => {
+                  if (event.pointerType === 'touch') {
+                    return;
+                  }
+
+                  setActivePoint({
+                    episodeIndex,
+                    wordsSpoken,
+                    x: cx,
+                    y: cy,
+                  });
+                }}
+                onPointerLeave={() =>
+                  setActivePoint((currentPoint) =>
+                    currentPoint?.episodeIndex === episodeIndex
+                      ? null
+                      : currentPoint,
+                  )
+                }
+                onFocus={() =>
+                  setActivePoint({
+                    episodeIndex,
+                    wordsSpoken,
+                    x: cx,
+                    y: cy,
+                  })
+                }
+                onBlur={() =>
+                  setActivePoint((currentPoint) =>
+                    currentPoint?.episodeIndex === episodeIndex
+                      ? null
+                      : currentPoint,
+                  )
+                }
+                onClick={() => {
+                  setActivePoint(null);
+                  setSelectedPoint({ season, episode });
+                }}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
@@ -142,15 +187,17 @@ export function CharacterLine({
                   cy={cy}
                   r="2"
                 />
-                <PointTooltip
-                  chartWidth={chartWidth}
-                  wordsSpoken={wordsSpoken}
-                  x={cx}
-                  y={cy}
-                />
               </g>
             ),
           )}
+          {activePoint ? (
+            <PointTooltip
+              chartWidth={chartWidth}
+              wordsSpoken={activePoint.wordsSpoken}
+              x={activePoint.x}
+              y={activePoint.y}
+            />
+          ) : null}
         </svg>
       </div>
 

@@ -23,7 +23,7 @@ export function PointTooltip({
 
   return (
     <g
-      className="pointer-events-none opacity-0 transition-opacity duration-150 ease-in-out group-hover:opacity-100 group-focus-visible:opacity-100"
+      className="pointer-events-none"
       transform={`translate(${tooltipX} ${tooltipY})`}
     >
       <rect
