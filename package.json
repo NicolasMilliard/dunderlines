@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "tmdb:episodes": "node scripts/fetchTmdbEpisodes.mjs",
     "words:featured": "node scripts/exportFeaturedOfficeCharacters.mjs"
   },
   "dependencies": {

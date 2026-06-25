@@ -85,3 +85,28 @@ Use this after editing `src/data/the-office.json` or after changing the
 
 Do not manually edit `src/data/generated/featuredOfficeCharacters.ts`; it is
 generated and will be overwritten.
+
+## `fetchTmdbEpisodes.mjs`
+
+This is the build-time TMDB metadata script. It uses a fixed list of The Office
+season/episode numbers, fetches episode details from TMDB, and writes:
+
+```text
+src/data/generated/tmdbEpisodes.ts
+```
+
+Use a non-public environment variable:
+
+```bash
+TMDB_READ_ACCESS_TOKEN=your_token_here bun run tmdb:episodes
+```
+
+By default, the script reuses existing generated episodes and fetches only
+missing data. To refresh every episode:
+
+```bash
+bun run tmdb:episodes -- --refresh
+```
+
+Do not prefix the build-time token with `VITE_`; `VITE_*` values are bundled
+into the browser app.
